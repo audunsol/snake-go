@@ -19,7 +19,7 @@ go run .
 ## Remaining work
 
 - [x] Don't mess up terminal colors etc when terminating
-- [ ] Get fruits to render properly
+- [x] Get fruits to render properly
 - [ ] Increase length of snake when eating fruit
 - [ ] Remove fruit when eaten
 - [ ] 
