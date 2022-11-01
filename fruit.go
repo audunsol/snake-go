@@ -8,7 +8,6 @@ var apple = '\U0001F34E'
 var banana = '\U0001F34C'
 var pear = '\U0001F350'
 
-var fruitRunes = []rune{apple, banana, pear}
 
 type Fruit struct {
 	X    int
