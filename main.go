@@ -36,6 +36,8 @@ func main() {
 				game.Snake.TurnUp()
 			} else if event.Key() == tcell.KeyDown {
 				game.Snake.TurnDown()
+			} else if event.Key() == tcell.KeyCtrlSpace {
+				game.Snake.Pause()
 			}
 		}
 	}

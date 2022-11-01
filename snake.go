@@ -14,6 +14,7 @@ type Snake struct {
 	Y      int
 	Xspeed int
 	Yspeed int
+	Paused bool
 	Length int
 	Body   []BodyPart
 }
@@ -25,6 +26,7 @@ func NewSnake() Snake {
 	s.Xspeed = Xspeed
 	s.Yspeed = 0
 	s.Length = 4
+	s.Paused = false
 	for i := 0; i < s.Length; i++ {
 		s.Body = append(s.Body, BodyPart{
 			X: s.X - i,
@@ -39,6 +41,9 @@ func (s *Snake) Display() rune {
 }
 
 func (s *Snake) Update() {
+	if s.Paused {
+		return
+	}
 	// Add new body part where head was now
 	b := BodyPart{
 		X: s.X,
@@ -89,4 +94,7 @@ func (s *Snake) TurnDown() {
 		s.Xspeed = 0
 		s.Yspeed = Yspeed
 	}
+
+func (s *Snake) Pause() {
+	s.Paused = !s.Paused
 }
