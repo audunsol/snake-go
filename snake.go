@@ -1,6 +1,6 @@
 package main
 
-const Xspeed = 2
+const Xspeed = 1
 const Yspeed = 1
 const BodyRune = '*'
 
