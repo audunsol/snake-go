@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"time"
 
@@ -68,6 +67,12 @@ func (g *Game) RenderText(startX int, startY int, text string) {
 	}
 }
 
+func (g *Game) CenterText(startY int, text string) {
+	width, _ := g.Screen.Size()
+	startX := (width / 2) - (len(text) / 2)
+	g.RenderText(startX, startY, text)
+}
+
 func (g *Game) RenderCoordinates() {
 	f := g.Fruits
 	sn := g.Snake
@@ -91,6 +96,12 @@ func (g *Game) EatFruit() {
 	}
 }
 
+func (g *Game) RenderGameOver() {
+	g.CenterText(7, "Game Over")
+	g.CenterText(11, fmt.Sprintf("%v points", g.Snake.Length))
+	g.Screen.Show()
+}
+
 func (g *Game) Run() {
 	s := g.Screen
 	s.SetStyle(defStyle)
@@ -101,6 +112,8 @@ func (g *Game) Run() {
 
 		width, height := s.Size()
 		if !g.Snake.CheckEdges(width, height) {
+			g.RenderGameOver()
+			time.Sleep(3 * time.Second)
 			g.Exit()
 		}
 		g.EatFruit()
@@ -117,6 +130,5 @@ func (g *Game) Run() {
 
 func (g *Game) Exit() {
 	g.Screen.Fini()
-	log.Println("Game over!")
 	os.Exit(0)
 }
