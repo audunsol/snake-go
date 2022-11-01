@@ -17,21 +17,7 @@ func main() {
 	}
 
 	snake := NewSnake()
-
-	width, height := screen.Size()
-	fruits := []Fruit{
-		NewFruit(width, height),
-		NewFruit(width, height),
-		NewFruit(width, height),
-		NewFruit(width, height),
-		NewFruit(width, height),
-	}
-
-	game := Game{
-		Screen: screen,
-		Snake:  snake,
-		Fruits: fruits,
-	}
+	game := NewGame(screen, snake)
 
 	go game.Run()
 

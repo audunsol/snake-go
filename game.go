@@ -16,6 +16,25 @@ type Game struct {
 	Fruits []Fruit
 }
 
+func NewGame(screen tcell.Screen, snake Snake) Game {
+	game := Game{
+		Screen: screen,
+		Snake:  snake,
+	}
+	fruits := game.GenerateFruit(3)
+	game.Fruits = fruits
+	return game
+}
+
+func (g *Game) GenerateFruit(n int) []Fruit {
+	width, height := g.Screen.Size()
+	fruits := []Fruit{}
+	for i := 0; i < n; i++ {
+		fruits = append(fruits, NewFruit(width, height))
+	}
+	return fruits
+}
+
 func (g *Game) RenderSnake() {
 	s := g.Screen
 	s.SetContent(g.Snake.X, g.Snake.Y, g.Snake.Display(), nil, defStyle)
