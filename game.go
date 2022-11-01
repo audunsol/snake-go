@@ -40,8 +40,10 @@ func (g *Game) RenderSnake() {
 	s.SetContent(g.Snake.X, g.Snake.Y, g.Snake.Display(), nil, defStyle)
 	snake := g.Snake
 	for i := 0; i < snake.Length; i++ {
-		part := snake.Body[i]
-		s.SetContent(part.X, part.Y, g.Snake.Display(), nil, defStyle)
+		if i < len(snake.Body) {
+			part := snake.Body[i]
+			s.SetContent(part.X, part.Y, g.Snake.Display(), nil, defStyle)
+		}
 	}
 }
 
