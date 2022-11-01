@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -60,6 +61,22 @@ func (g *Game) RenderFruits() {
 	}
 }
 
+func (g *Game) RenderText(startX int, startY int, text string) {
+	s := g.Screen
+	for pos, char := range text {
+		s.SetContent(startX+pos, startY, rune(char), nil, defStyle)
+	}
+}
+
+func (g *Game) RenderCoordinates() {
+	f := g.Fruits
+	sn := g.Snake
+	g.RenderText(0, 0, fmt.Sprintf("Snake: (%v, %v)", sn.X, sn.Y))
+	for i, fruit := range f {
+		g.RenderText(0, 1+i, fmt.Sprintf("Fruit %v: (%v, %v)", i, fruit.X, fruit.Y))
+	}
+}
+
 func (g *Game) EatFruit() {
 	var i = 0
 	for i = 0; i < len(g.Fruits); i++ {
@@ -87,6 +104,7 @@ func (g *Game) Run() {
 			g.Exit()
 		}
 		g.EatFruit()
+		g.RenderCoordinates()
 		g.Snake.Update()
 		g.RenderSnake()
 		g.RenderFruits()
