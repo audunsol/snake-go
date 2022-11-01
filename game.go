@@ -54,6 +54,12 @@ func (g *Game) RenderFruits() {
 		fruit := f[i]
 		s.SetContent(fruit.X, fruit.Y, fruit.Display(), nil, defStyle)
 	}
+
+	if len(g.Fruits) == 0 {
+		g.Fruits = g.GenerateFruit(3)
+	}
+}
+
 func (g *Game) EatFruit() {
 	var i = 0
 	for i = 0; i < len(g.Fruits); i++ {
