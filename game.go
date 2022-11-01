@@ -33,6 +33,18 @@ func (g *Game) RenderFruits() {
 		fruit := f[i]
 		s.SetContent(fruit.X, fruit.Y, fruit.Display(), nil, defStyle)
 	}
+func (g *Game) EatFruit() {
+	var i = 0
+	for i = 0; i < len(g.Fruits); i++ {
+		f := g.Fruits[i]
+		if f.DidHit(&g.Snake) {
+			break
+		}
+	}
+	if i < len(g.Fruits) {
+		g.Fruits = append(g.Fruits[:i], g.Fruits[i+1:]...)
+		g.Snake.Length += 3
+	}
 }
 
 func (g *Game) Run() {
@@ -47,7 +59,7 @@ func (g *Game) Run() {
 		if !g.Snake.CheckEdges(width, height) {
 			g.Exit()
 		}
-		// TODO: check if hit fruit
+		g.EatFruit()
 		g.Snake.Update()
 		g.RenderSnake()
 		g.RenderFruits()
