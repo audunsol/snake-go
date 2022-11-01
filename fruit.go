@@ -7,7 +7,18 @@ import (
 var apple = '\U0001F34E'
 var banana = '\U0001F34C'
 var pear = '\U0001F350'
+var cherry = '\U0001F352'
+var strawberry = '\U0001F353'
+var eggplant = '\U0001F346'
 
+var fruitRunes = []rune{
+	apple,
+	banana,
+	pear,
+	cherry,
+	strawberry,
+	eggplant,
+}
 
 type Fruit struct {
 	X    int
