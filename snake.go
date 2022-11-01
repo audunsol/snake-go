@@ -50,8 +50,11 @@ func (s *Snake) Update() {
 		Y: s.Y,
 	}
 	s.Body = append([]BodyPart{b}, s.Body...)
-	// Remove last item from body
-	s.Body = s.Body[:len(s.Body)-1]
+	if len(s.Body) == s.Length {
+		// Remove last item from body
+		// if snake has its full length (nothing eaten recently):
+		s.Body = s.Body[:len(s.Body)-1]
+	}
 	// Move head at the direction of speed:
 	s.X += s.Xspeed
 	s.Y += s.Yspeed
