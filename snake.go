@@ -97,6 +97,7 @@ func (s *Snake) TurnDown() {
 		s.Xspeed = 0
 		s.Yspeed = Yspeed
 	}
+}
 
 func (s *Snake) Pause() {
 	s.Paused = !s.Paused
