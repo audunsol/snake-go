@@ -108,29 +108,47 @@ func (g *Game) RenderGameOver() {
 	time.Sleep(2 * time.Second)
 }
 
-func (g *Game) Run() {
+func (g *Game) Run(ch chan Action) {
 	s := g.Screen
 	s.SetStyle(defStyle)
 
+	tick := time.Tick(80 * time.Millisecond)
+
 	// Main loop is here:
 	for !g.IsGameOver {
+		select {
+		case <-tick:
 
-		width, height := s.Size()
-		if !g.Snake.CheckEdges(width, height) {
-			g.RenderGameOver()
-			time.Sleep(3 * time.Second)
-			g.Exit()
+			width, height := s.Size()
+			if !g.Snake.CheckEdges(width, height) || !g.Snake.CheckSelfCollision() {
+				g.IsGameOver = true
+			}
+			g.EatFruit()
+			g.Snake.Update()
+
+			// Render:
+			s.Clear()
+			// g.RenderCoordinates()
+			g.RenderSnake()
+			g.RenderFruits()
+			s.SetContent(g.Snake.X, g.Snake.Y, g.Snake.Display(), nil, defStyle)
+			s.Show()
+		case action := <-ch:
+			switch action {
+			case TurnLeft:
+				g.Snake.TurnLeft()
+			case TurnRight:
+				g.Snake.TurnRight()
+			case TurnUp:
+				g.Snake.TurnUp()
+			case TurnDown:
+				g.Snake.TurnDown()
+			case Pause:
+				g.Snake.Pause()
+			}
 		}
-		g.EatFruit()
-		g.RenderCoordinates()
-		g.Snake.Update()
-		g.RenderSnake()
-		g.RenderFruits()
-		s.SetContent(g.Snake.X, g.Snake.Y, g.Snake.Display(), nil, defStyle)
-
-		time.Sleep(40 * time.Millisecond)
-		s.Show()
 	}
+
 	g.RenderGameOver()
 	g.Exit()
 }

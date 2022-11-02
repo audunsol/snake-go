@@ -19,7 +19,9 @@ func main() {
 	snake := NewSnake()
 	game := NewGame(screen, snake)
 
-	go game.Run()
+	ch := make(chan Action)
+
+	go game.Run(ch)
 
 	for {
 		switch event := screen.PollEvent().(type) {
@@ -29,15 +31,15 @@ func main() {
 			if event.Key() == tcell.KeyEscape || event.Key() == tcell.KeyCtrlC {
 				game.Exit()
 			} else if event.Key() == tcell.KeyLeft {
-				game.Snake.TurnLeft()
+				ch <- TurnLeft
 			} else if event.Key() == tcell.KeyRight {
-				game.Snake.TurnRight()
+				ch <- TurnRight
 			} else if event.Key() == tcell.KeyUp {
-				game.Snake.TurnUp()
+				ch <- TurnUp
 			} else if event.Key() == tcell.KeyDown {
-				game.Snake.TurnDown()
+				ch <- TurnDown
 			} else if event.Key() == tcell.KeyCtrlSpace {
-				game.Snake.Pause()
+				ch <- Pause
 			}
 		}
 	}
