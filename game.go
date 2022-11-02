@@ -11,15 +11,17 @@ import (
 var defStyle = tcell.StyleDefault.Background(tcell.ColorBlack).Foreground(tcell.ColorYellow)
 
 type Game struct {
-	Screen tcell.Screen
-	Snake  Snake
-	Fruits []Fruit
+	Screen     tcell.Screen
+	Snake      Snake
+	Fruits     []Fruit
+	IsGameOver bool
 }
 
 func NewGame(screen tcell.Screen, snake Snake) Game {
 	game := Game{
-		Screen: screen,
-		Snake:  snake,
+		Screen:     screen,
+		Snake:      snake,
+		IsGameOver: false,
 	}
 	fruits := game.GenerateFruit(3)
 	game.Fruits = fruits
@@ -99,7 +101,11 @@ func (g *Game) EatFruit() {
 func (g *Game) RenderGameOver() {
 	g.CenterText(7, "Game Over")
 	g.CenterText(11, fmt.Sprintf("%v points", g.Snake.Length))
+	g.CenterText(15, "Hit ENTER to restart or ESC to quit")
+
 	g.Screen.Show()
+	// TODO: Make this Enter/ESC thing work...
+	time.Sleep(2 * time.Second)
 }
 
 func (g *Game) Run() {
@@ -107,8 +113,7 @@ func (g *Game) Run() {
 	s.SetStyle(defStyle)
 
 	// Main loop is here:
-	for {
-		s.Clear()
+	for !g.IsGameOver {
 
 		width, height := s.Size()
 		if !g.Snake.CheckEdges(width, height) {
@@ -126,6 +131,8 @@ func (g *Game) Run() {
 		time.Sleep(40 * time.Millisecond)
 		s.Show()
 	}
+	g.RenderGameOver()
+	g.Exit()
 }
 
 func (g *Game) Exit() {
