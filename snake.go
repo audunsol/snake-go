@@ -50,7 +50,7 @@ func (s *Snake) Update() {
 		Y: s.Y,
 	}
 	s.Body = append([]BodyPart{b}, s.Body...)
-	if len(s.Body) == s.Length {
+	if len(s.Body) >= s.Length {
 		// Remove last item from body
 		// if snake has its full length (nothing eaten recently):
 		s.Body = s.Body[:len(s.Body)-1]
@@ -67,6 +67,16 @@ func (s *Snake) Eat() {
 func (s *Snake) CheckEdges(w int, h int) bool {
 	if s.X > w || s.X < 0 || s.Y > h || s.Y < 0 {
 		return false
+	}
+	return true
+}
+
+func (s *Snake) CheckSelfCollision() bool {
+	for i := len(s.Body) - 1; i > 4; i-- {
+		b := s.Body[i]
+		if s.X == b.X && s.Y == b.Y {
+			return false
+		}
 	}
 	return true
 }
