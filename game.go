@@ -23,7 +23,7 @@ func NewGame(screen tcell.Screen, snake Snake) Game {
 		Snake:      snake,
 		IsGameOver: false,
 	}
-	fruits := game.GenerateFruit(3)
+	fruits := game.GenerateFruit(10)
 	game.Fruits = fruits
 	return game
 }
