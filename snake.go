@@ -2,7 +2,7 @@ package main
 
 const Xspeed = 1
 const Yspeed = 1
-const BodyRune = '*'
+const BodyRune = '\U0001F7E7'
 
 type BodyPart struct {
 	X int
