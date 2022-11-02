@@ -76,11 +76,15 @@ func (g *Game) CenterText(startY int, text string) {
 }
 
 func (g *Game) RenderCoordinates() {
-	f := g.Fruits
+	// f := g.Fruits
 	sn := g.Snake
 	g.RenderText(0, 0, fmt.Sprintf("Snake: (%v, %v)", sn.X, sn.Y))
-	for i, fruit := range f {
-		g.RenderText(0, 1+i, fmt.Sprintf("Fruit %v: (%v, %v)", i, fruit.X, fruit.Y))
+	g.RenderText(0, 1, fmt.Sprintf("Snake len: %v", len(sn.Body)))
+	// for i, fruit := range f {
+	// 	g.RenderText(0, 1+i, fmt.Sprintf("Fruit %v: (%v, %v)", i, fruit.X, fruit.Y))
+	// }
+	for i, bp := range sn.Body {
+		g.RenderText(0, 2+i, fmt.Sprintf("BodyPart %v: (%v, %v)", i, bp.X, bp.Y))
 	}
 }
 
