@@ -60,8 +60,11 @@ func (s *Snake) Update() {
 	s.Y += s.Yspeed
 }
 
-func (s *Snake) Eat() {
-	s.Length += 3
+func (s *Snake) Eat(f Fruit) {
+	s.Length += f.Points
+	if s.Length < 1 {
+		s.Length = 1
+	}
 }
 
 func (s *Snake) CheckEdges(w int, h int) bool {

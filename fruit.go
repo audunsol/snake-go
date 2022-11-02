@@ -10,28 +10,42 @@ var pear = '\U0001F350'
 var cherry = '\U0001F352'
 var strawberry = '\U0001F353'
 var eggplant = '\U0001F346'
+var poo = '\U0001F4A9'
+var firecracker = '\U0001F9E8'
+var bomb = '\U0001F4A3'
 
-var fruitRunes = []rune{
-	apple,
-	banana,
-	pear,
-	cherry,
-	strawberry,
-	eggplant,
+var availableFruits = []struct {
+	Rune   rune
+	Points int
+	Lethal bool
+}{
+	{apple, 3, false},
+	{banana, 4, false},
+	{pear, 3, false},
+	{cherry, 2, false},
+	{strawberry, 4, false},
+	{eggplant, 1, false},
+	{poo, -10, false},
+	{firecracker, 0, true},
+	{bomb, 0, true},
 }
 
 type Fruit struct {
-	X    int
-	Y    int
-	Type rune
+	X      int
+	Y      int
+	Type   rune
+	Points int
+	Lethal bool
 }
 
 func NewFruit(maxX int, maxY int) Fruit {
-	randomFruit := fruitRunes[rand.Intn(len(fruitRunes))]
+	f := availableFruits[rand.Intn(len(availableFruits))]
 	return Fruit{
-		X:    rand.Intn(maxX),
-		Y:    rand.Intn(maxY),
-		Type: randomFruit,
+		X:      rand.Intn(maxX),
+		Y:      rand.Intn(maxY),
+		Type:   f.Rune,
+		Points: f.Points,
+		Lethal: f.Lethal,
 	}
 }
 
@@ -41,4 +55,8 @@ func (f *Fruit) Display() rune {
 
 func (f *Fruit) DidHit(s *Snake) bool {
 	return s.X == f.X && s.Y == f.Y
+}
+
+func (f *Fruit) IsEatable() bool {
+	return !f.Lethal && f.Points > 0
 }

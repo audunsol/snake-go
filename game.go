@@ -57,7 +57,13 @@ func (g *Game) RenderFruits() {
 		s.SetContent(fruit.X, fruit.Y, fruit.Display(), nil, defStyle)
 	}
 
-	if len(g.Fruits) == 0 {
+	eatableFruitLeft := 0
+	for _, fruit := range f {
+		if fruit.IsEatable() {
+			eatableFruitLeft++
+		}
+	}
+	if eatableFruitLeft == 0 {
 		g.Fruits = g.GenerateFruit(3)
 	}
 }
@@ -90,15 +96,19 @@ func (g *Game) RenderCoordinates() {
 
 func (g *Game) EatFruit() {
 	var i = 0
+	var f Fruit
 	for i = 0; i < len(g.Fruits); i++ {
-		f := g.Fruits[i]
+		f = g.Fruits[i]
 		if f.DidHit(&g.Snake) {
 			break
 		}
 	}
 	if i < len(g.Fruits) {
+		if f.Lethal {
+			g.IsGameOver = true
+		}
+		g.Snake.Eat(f)
 		g.Fruits = append(g.Fruits[:i], g.Fruits[i+1:]...)
-		g.Snake.Length += 3
 	}
 }
 

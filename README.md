@@ -35,6 +35,10 @@ go run .
 - [ ] Change snake bodyparts (other unicode/emoji symbol that better aligns with fruit)
 - [x] Add pause-functionality
 - [x] Game over when hitting itself
-- [ ] Different points for different fruits
-- [ ] Negative points for some fruits?
+- [x] Different points for different fruits
+- [x] Negative points for some fruits (poo)?
+- [ ] Animate vomiting or nauseated face when eating poo
+- [ ] Animate explosion when eating bombs
 - [ ] Bonus points for fruits (diamonds) showing up just for a short period
+- [ ] Implement wormhole
+- [x] Add bombs (fruits that one has to avoid)
