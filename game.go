@@ -104,10 +104,10 @@ func (g *Game) EatFruit() {
 		}
 	}
 	if i < len(g.Fruits) {
+		g.Snake.Eat(f)
 		if f.Lethal {
 			g.IsGameOver = true
 		}
-		g.Snake.Eat(f)
 		g.Fruits = append(g.Fruits[:i], g.Fruits[i+1:]...)
 	}
 }
