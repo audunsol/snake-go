@@ -50,6 +50,17 @@ func (s *Snake) Display() rune {
 	}
 }
 
+func (s *Snake) IsFastForwarding() bool {
+	return s.Xspeed > 1 || s.Xspeed < -1 || s.Yspeed > 1 || s.Yspeed < -1
+}
+
+func (s *Snake) itemsToBeRemoved() int {
+	if s.IsFastForwarding() {
+		return 2
+	}
+	return 1
+}
+
 func (s *Snake) Update() {
 	if s.Paused {
 		return
@@ -61,13 +72,26 @@ func (s *Snake) Update() {
 	}
 	s.Body = append([]BodyPart{b}, s.Body...)
 	if len(s.Body) >= s.Length {
-		// Remove last item from body
+		// Remove last item(s) from body
 		// if snake has its full length (nothing eaten recently):
-		s.Body = s.Body[:len(s.Body)-1]
+		s.Body = s.Body[:len(s.Body)-s.itemsToBeRemoved()]
 	}
 	// Move head at the direction of speed:
 	s.X += s.Xspeed
 	s.Y += s.Yspeed
+
+	// Reset all fast forwards back
+	// (the button has to be held down or re-pressed to get full speed,
+	// not just double-tapped:
+	if s.Xspeed > 1 {
+		s.Xspeed = 1
+	} else if s.Xspeed < -1 {
+		s.Xspeed = -1
+	} else if s.Yspeed > 1 {
+		s.Yspeed = 1
+	} else if s.Yspeed < -1 {
+		s.Yspeed = -1
+	}
 }
 
 func (s *Snake) Eat(f Fruit) {
@@ -102,6 +126,9 @@ func (s *Snake) CheckSelfCollision() bool {
 }
 
 func (s *Snake) TurnLeft() {
+	if s.Xspeed == -1 {
+		s.Xspeed = -2
+	}
 	if s.Xspeed == 0 {
 		s.Xspeed = -1
 		s.Yspeed = 0
@@ -109,6 +136,9 @@ func (s *Snake) TurnLeft() {
 }
 
 func (s *Snake) TurnRight() {
+	if s.Xspeed == 1 {
+		s.Xspeed = 2
+	}
 	if s.Xspeed == 0 {
 		s.Xspeed = 1
 		s.Yspeed = 0
@@ -116,6 +146,9 @@ func (s *Snake) TurnRight() {
 }
 
 func (s *Snake) TurnUp() {
+	if s.Yspeed == -1 {
+		s.Yspeed = -2
+	}
 	if s.Yspeed == 0 {
 		s.Xspeed = 0
 		s.Yspeed = -1
@@ -123,6 +156,9 @@ func (s *Snake) TurnUp() {
 }
 
 func (s *Snake) TurnDown() {
+	if s.Yspeed == 1 {
+		s.Yspeed = 2
+	}
 	if s.Yspeed == 0 {
 		s.Xspeed = 0
 		s.Yspeed = 1

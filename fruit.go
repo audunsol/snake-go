@@ -53,8 +53,22 @@ func (f *Fruit) Display() rune {
 	return f.Type
 }
 
+func (f *Fruit) didFastForwardOver(s *Snake) bool {
+	if s.Y == f.Y {
+		return (s.Xspeed == 2 && (s.X-1) == f.X) || (s.Xspeed == -2 && (s.X+1) == f.X)
+	}
+	if s.X == f.X {
+		return (s.Yspeed == 2 && (s.Y-1) == f.Y) || (s.Yspeed == -2 && (s.Y+1) == f.Y)
+	}
+	return false
+}
+
 func (f *Fruit) DidHit(s *Snake) bool {
-	return s.X == f.X && s.Y == f.Y
+	if s.X == f.X && s.Y == f.Y {
+		return true
+	}
+
+	return f.didFastForwardOver(s)
 }
 
 func (f *Fruit) IsEatable() bool {

@@ -25,7 +25,7 @@ go run .
 - [x] Fix bug where it is not possible to eat some bugs
 - [x] Add Game Over screen
 - [ ] Add start over/exit question input
-- [ ] Increase speed when holding arrows
+- [x] Increase speed when holding arrows (Fast Forward)
 - [ ] Set col/row size to make speed consistent in x/y direction
 - [ ] Add border/frame and point counter
 - [ ] Add menu to start new game, exit, set player name
