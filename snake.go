@@ -1,8 +1,8 @@
 package main
 
-const Xspeed = 1
-const Yspeed = 1
 const BodyRune = '\U0001F7E7'
+const NauseatedBodyRune = '\U0001F922'
+const ExplodingBodyRune = '\U0001F4A5'
 
 type BodyPart struct {
 	X int
@@ -10,13 +10,15 @@ type BodyPart struct {
 }
 
 type Snake struct {
-	X      int
-	Y      int
-	Xspeed int
-	Yspeed int
-	Paused bool
-	Length int
-	Body   []BodyPart
+	X         int
+	Y         int
+	Xspeed    int
+	Yspeed    int
+	Paused    bool
+	Length    int
+	Body      []BodyPart
+	Nauseated bool
+	Exploding bool
 }
 
 func NewSnake() Snake {
@@ -27,6 +29,8 @@ func NewSnake() Snake {
 	s.Yspeed = 0
 	s.Length = 4
 	s.Paused = false
+	s.Nauseated = false
+	s.Exploding = false
 	for i := 0; i < s.Length; i++ {
 		s.Body = append(s.Body, BodyPart{
 			X: s.X - i,
@@ -37,7 +41,13 @@ func NewSnake() Snake {
 }
 
 func (s *Snake) Display() rune {
-	return BodyRune
+	if s.Nauseated {
+		return NauseatedBodyRune
+	} else if s.Exploding {
+		return ExplodingBodyRune
+	} else {
+		return BodyRune
+	}
 }
 
 func (s *Snake) Update() {
@@ -61,6 +71,13 @@ func (s *Snake) Update() {
 }
 
 func (s *Snake) Eat(f Fruit) {
+	if f.Lethal {
+		s.Exploding = true
+	} else if f.Points <= 0 {
+		s.Nauseated = true
+	} else if f.Points > 0 {
+		s.Nauseated = false
+	}
 	s.Length += f.Points
 	if s.Length < 1 {
 		s.Length = 1
