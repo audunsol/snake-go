@@ -25,7 +25,7 @@ func NewSnake() Snake {
 	s := Snake{}
 	s.X = 5
 	s.Y = 10
-	s.Xspeed = Xspeed
+	s.Xspeed = 1
 	s.Yspeed = 0
 	s.Length = 4
 	s.Paused = false
@@ -103,14 +103,14 @@ func (s *Snake) CheckSelfCollision() bool {
 
 func (s *Snake) TurnLeft() {
 	if s.Xspeed == 0 {
-		s.Xspeed = -1 * Xspeed
+		s.Xspeed = -1
 		s.Yspeed = 0
 	}
 }
 
 func (s *Snake) TurnRight() {
 	if s.Xspeed == 0 {
-		s.Xspeed = Xspeed
+		s.Xspeed = 1
 		s.Yspeed = 0
 	}
 }
@@ -118,14 +118,14 @@ func (s *Snake) TurnRight() {
 func (s *Snake) TurnUp() {
 	if s.Yspeed == 0 {
 		s.Xspeed = 0
-		s.Yspeed = -1 * Yspeed
+		s.Yspeed = -1
 	}
 }
 
 func (s *Snake) TurnDown() {
 	if s.Yspeed == 0 {
 		s.Xspeed = 0
-		s.Yspeed = Yspeed
+		s.Yspeed = 1
 	}
 }
 
