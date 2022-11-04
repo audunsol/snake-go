@@ -13,24 +13,26 @@ var defStyle = tcell.StyleDefault.Background(tcell.ColorBlack).Foreground(tcell.
 var rightPanelWidth = 50
 var borderSize = 1
 
+const initialNumberOfFruits = 10
+
 type Game struct {
-	Screen     tcell.Screen
-	Width      int
-	Height     int
-	Snake      Snake
-	Fruits     []Fruit
-	IsGameOver bool
+	Screen                tcell.Screen
+	Width                 int
+	Height                int
+	Snake                 Snake
+	Fruits                []Fruit
+	IsGameOver            bool
+	EatableFruitsPerLevel int
 }
 
-func NewGame(screen tcell.Screen, snake Snake) Game {
+func NewGame(screen tcell.Screen) Game {
 	game := Game{
 		Screen:     screen,
-		Snake:      snake,
+		Snake:      NewSnake(),
 		IsGameOver: false,
 	}
 	game.ResizeScreen()
-	fruits := game.GenerateFruit(10)
-	game.Fruits = fruits
+	game.Fruits = game.GenerateFruit(initialNumberOfFruits)
 	return game
 }
 
@@ -148,14 +150,24 @@ func (g *Game) EatFruit() {
 	}
 }
 
-func (g *Game) RenderGameOver() {
+func (g *Game) RenderGameOver(ch chan Action) {
 	g.CenterText(7, "Game Over")
 	g.CenterText(11, fmt.Sprintf("%v points", g.CalculatePoints()))
 	g.CenterText(15, "Hit ENTER to restart or ESC to quit")
 
 	g.Screen.Show()
-	// TODO: Make this Enter/ESC thing work...
-	time.Sleep(2 * time.Second)
+	fmt.Printf("Will wait for answer")
+
+	for {
+		answer := <-ch
+		if answer == Yes {
+			newGame := NewGame(g.Screen)
+			g = &newGame
+			g.Run(ch)
+		} else if answer == Quit {
+			g.Exit()
+		}
+	}
 }
 
 func (g *Game) Run(ch chan Action) {
@@ -197,12 +209,13 @@ func (g *Game) Run(ch chan Action) {
 				g.Snake.Pause()
 			case Resize:
 				g.ResizeScreen()
+			case Quit:
+				g.Exit()
 			}
 		}
 	}
 
-	g.RenderGameOver()
-	g.Exit()
+	g.RenderGameOver(ch)
 }
 
 func (g *Game) Exit() {

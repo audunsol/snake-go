@@ -16,8 +16,7 @@ func main() {
 		log.Fatalf("%+v", err)
 	}
 
-	snake := NewSnake()
-	game := NewGame(screen, snake)
+	game := NewGame(screen)
 
 	ch := make(chan Action)
 
@@ -30,7 +29,7 @@ func main() {
 			ch <- Resize
 		case *tcell.EventKey:
 			if event.Key() == tcell.KeyEscape || event.Key() == tcell.KeyCtrlC {
-				game.Exit()
+				ch <- Quit
 			} else if event.Key() == tcell.KeyLeft {
 				ch <- TurnLeft
 			} else if event.Key() == tcell.KeyRight {
@@ -39,8 +38,10 @@ func main() {
 				ch <- TurnUp
 			} else if event.Key() == tcell.KeyDown {
 				ch <- TurnDown
-			} else if event.Key() == tcell.KeyCtrlSpace {
+			} else if event.Key() == tcell.KeyCtrlSpace || event.Key() == ' ' {
 				ch <- Pause
+			} else if event.Key() == tcell.KeyEnter || event.Key() == 'y' || event.Key() == 'Y' {
+				ch <- Yes
 			}
 		}
 	}

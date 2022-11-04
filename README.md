@@ -24,7 +24,7 @@ go run .
 - [x] Remove fruit when eaten
 - [x] Fix bug where it is not possible to eat some bugs
 - [x] Add Game Over screen
-- [ ] Add start over/exit question input
+- [x] Add start over/exit question input
 - [x] Increase speed when holding arrows (Fast Forward)
 - [x] Set col/row size to make speed consistent in x/y direction
 - [x] Add border/frame and point counter

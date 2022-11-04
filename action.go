@@ -10,4 +10,5 @@ const (
 	Pause
 	Quit
 	Resize
+	Yes
 )
