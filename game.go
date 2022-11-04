@@ -156,7 +156,6 @@ func (g *Game) RenderGameOver(ch chan Action) {
 	g.CenterText(15, "Hit ENTER to restart or ESC to quit")
 
 	g.Screen.Show()
-	fmt.Printf("Will wait for answer")
 
 	for {
 		answer := <-ch
