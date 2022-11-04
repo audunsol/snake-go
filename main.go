@@ -40,7 +40,7 @@ func main() {
 				ch <- TurnDown
 			} else if event.Key() == tcell.KeyCtrlSpace || event.Key() == ' ' {
 				ch <- Pause
-			} else if event.Key() == tcell.KeyEnter || event.Key() == 'y' || event.Key() == 'Y' {
+			} else if event.Key() == tcell.KeyEnter {
 				ch <- Yes
 			}
 		}
