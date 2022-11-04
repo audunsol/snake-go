@@ -108,8 +108,10 @@ func (s *Snake) Eat(f Fruit) {
 	}
 }
 
-func (s *Snake) CheckEdges(w int, h int) bool {
-	if s.X > w || s.X < 0 || s.Y > h || s.Y < 0 {
+func (s *Snake) CheckEdges(w, h, borderSize int) bool {
+	minX, maxX := borderSize, w-borderSize
+	minY, maxY := borderSize, h-borderSize
+	if s.X > maxX || s.X < minX || s.Y > maxY || s.Y < minY {
 		return false
 	}
 	return true

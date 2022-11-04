@@ -38,7 +38,7 @@ type Fruit struct {
 	Lethal bool
 }
 
-func NewFruit(maxX int, maxY int) Fruit {
+func NewFruit(minX, minY, maxX, maxY int) Fruit {
 	f := availableFruits[rand.Intn(len(availableFruits))]
 	return Fruit{
 		X:      rand.Intn(maxX),

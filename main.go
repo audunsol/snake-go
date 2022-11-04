@@ -27,6 +27,7 @@ func main() {
 		switch event := screen.PollEvent().(type) {
 		case *tcell.EventResize:
 			screen.Sync()
+			ch <- Resize
 		case *tcell.EventKey:
 			if event.Key() == tcell.KeyEscape || event.Key() == tcell.KeyCtrlC {
 				game.Exit()

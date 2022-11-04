@@ -27,7 +27,7 @@ go run .
 - [ ] Add start over/exit question input
 - [x] Increase speed when holding arrows (Fast Forward)
 - [ ] Set col/row size to make speed consistent in x/y direction
-- [ ] Add border/frame and point counter
+- [x] Add border/frame and point counter
 - [ ] Add menu to start new game, exit, set player name
 - [ ] Add sqlite DB to hold high-scores and user profiles
 - [ ] Add settings

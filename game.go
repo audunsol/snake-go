@@ -10,8 +10,13 @@ import (
 
 var defStyle = tcell.StyleDefault.Background(tcell.ColorBlack).Foreground(tcell.ColorYellow)
 
+var rightPanelWidth = 50
+var borderSize = 1
+
 type Game struct {
 	Screen     tcell.Screen
+	Width      int
+	Height     int
 	Snake      Snake
 	Fruits     []Fruit
 	IsGameOver bool
@@ -23,16 +28,22 @@ func NewGame(screen tcell.Screen, snake Snake) Game {
 		Snake:      snake,
 		IsGameOver: false,
 	}
+	game.ResizeScreen()
 	fruits := game.GenerateFruit(10)
 	game.Fruits = fruits
 	return game
 }
 
-func (g *Game) GenerateFruit(n int) []Fruit {
+func (g *Game) ResizeScreen() {
 	width, height := g.Screen.Size()
+	g.Width = width - rightPanelWidth - borderSize*2
+	g.Height = height - borderSize*2
+}
+
+func (g *Game) GenerateFruit(n int) []Fruit {
 	fruits := []Fruit{}
 	for i := 0; i < n; i++ {
-		fruits = append(fruits, NewFruit(width, height))
+		fruits = append(fruits, NewFruit(borderSize, borderSize, g.Width-borderSize, g.Height-borderSize))
 	}
 	return fruits
 }
@@ -68,6 +79,22 @@ func (g *Game) RenderFruits() {
 	}
 }
 
+func (g *Game) RenderBorders() {
+	s := g.Screen
+	for i := 0; i < g.Width; i++ {
+		s.SetContent(i, 0, '=', nil, defStyle)
+		s.SetContent(i, g.Height, '=', nil, defStyle)
+	}
+	for j := 0; j < g.Height; j++ {
+		s.SetContent(0, j, '#', nil, defStyle)
+		s.SetContent(g.Width, j, '#', nil, defStyle)
+	}
+}
+
+func (g *Game) RenderPanel() {
+	g.RenderText(g.Width+2, 2, fmt.Sprintf("Points: %v", g.Snake.Length*100))
+}
+
 func (g *Game) RenderText(startX int, startY int, text string) {
 	s := g.Screen
 	for pos, char := range text {
@@ -76,8 +103,7 @@ func (g *Game) RenderText(startX int, startY int, text string) {
 }
 
 func (g *Game) CenterText(startY int, text string) {
-	width, _ := g.Screen.Size()
-	startX := (width / 2) - (len(text) / 2)
+	startX := (g.Width / 2) - (len(text) / 2)
 	g.RenderText(startX, startY, text)
 }
 
@@ -132,9 +158,7 @@ func (g *Game) Run(ch chan Action) {
 	for !g.IsGameOver {
 		select {
 		case <-tick:
-
-			width, height := s.Size()
-			if !g.Snake.CheckEdges(width, height) || !g.Snake.CheckSelfCollision() {
+			if !g.Snake.CheckEdges(g.Width, g.Height, borderSize) || !g.Snake.CheckSelfCollision() {
 				g.IsGameOver = true
 			}
 			g.EatFruit()
@@ -142,6 +166,8 @@ func (g *Game) Run(ch chan Action) {
 
 			// Render:
 			s.Clear()
+			g.RenderBorders()
+			g.RenderPanel()
 			// g.RenderCoordinates()
 			g.RenderSnake()
 			g.RenderFruits()
@@ -159,6 +185,8 @@ func (g *Game) Run(ch chan Action) {
 				g.Snake.TurnDown()
 			case Pause:
 				g.Snake.Pause()
+			case Resize:
+				g.ResizeScreen()
 			}
 		}
 	}

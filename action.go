@@ -9,4 +9,5 @@ const (
 	TurnDown
 	Pause
 	Quit
+	Resize
 )
