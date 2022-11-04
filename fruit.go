@@ -55,7 +55,7 @@ func (f *Fruit) Display() rune {
 
 func (f *Fruit) didFastForwardOver(s *Snake) bool {
 	if s.Y == f.Y {
-		return (s.Xspeed == 2 && (s.X-1) == f.X) || (s.Xspeed == -2 && (s.X+1) == f.X)
+		return (s.Xspeed == 4 && ((s.X-2) == f.X || (s.X-3) == f.X)) || (s.Xspeed == -4 && ((s.X+2) == f.X || s.X+3 == f.X))
 	}
 	if s.X == f.X {
 		return (s.Yspeed == 2 && (s.Y-1) == f.Y) || (s.Yspeed == -2 && (s.Y+1) == f.Y)
@@ -64,7 +64,7 @@ func (f *Fruit) didFastForwardOver(s *Snake) bool {
 }
 
 func (f *Fruit) DidHit(s *Snake) bool {
-	if s.X == f.X && s.Y == f.Y {
+	if (s.X == f.X || s.X+1 == f.X) && s.Y == f.Y {
 		return true
 	}
 

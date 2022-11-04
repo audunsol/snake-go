@@ -26,13 +26,13 @@ go run .
 - [x] Add Game Over screen
 - [ ] Add start over/exit question input
 - [x] Increase speed when holding arrows (Fast Forward)
-- [ ] Set col/row size to make speed consistent in x/y direction
+- [x] Set col/row size to make speed consistent in x/y direction
 - [x] Add border/frame and point counter
 - [ ] Add menu to start new game, exit, set player name
 - [ ] Add sqlite DB to hold high-scores and user profiles
 - [ ] Add settings
 - [ ] Add snake head (other unicode/emoji symbol)
-- [ ] Change snake bodyparts (other unicode/emoji symbol that better aligns with fruit)
+- [x] Change snake bodyparts (other unicode/emoji symbol that better aligns with fruit)
 - [x] Add pause-functionality
 - [x] Game over when hitting itself
 - [x] Different points for different fruits

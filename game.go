@@ -56,6 +56,9 @@ func (g *Game) RenderSnake() {
 		if i < len(snake.Body) {
 			part := snake.Body[i]
 			s.SetContent(part.X, part.Y, g.Snake.Display(), nil, defStyle)
+			if i < (len(snake.Body)-1) && snake.Body[i+1].Y == part.Y {
+				s.SetContent(part.X+1, part.Y, g.Snake.Display(), nil, defStyle)
+			}
 		}
 	}
 }

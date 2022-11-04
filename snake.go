@@ -26,7 +26,7 @@ func NewSnake() Snake {
 	s := Snake{}
 	s.X = 5
 	s.Y = 10
-	s.Xspeed = 1
+	s.Xspeed = 2
 	s.Yspeed = 0
 	s.Length = StartLength
 	s.Paused = false
@@ -52,7 +52,7 @@ func (s *Snake) Display() rune {
 }
 
 func (s *Snake) IsFastForwarding() bool {
-	return s.Xspeed > 1 || s.Xspeed < -1 || s.Yspeed > 1 || s.Yspeed < -1
+	return s.Xspeed > 2 || s.Xspeed < -2 || s.Yspeed > 1 || s.Yspeed < -1
 }
 
 func (s *Snake) itemsToBeRemoved() int {
@@ -84,10 +84,10 @@ func (s *Snake) Update() {
 	// Reset all fast forwards back
 	// (the button has to be held down or re-pressed to get full speed,
 	// not just double-tapped:
-	if s.Xspeed > 1 {
-		s.Xspeed = 1
-	} else if s.Xspeed < -1 {
-		s.Xspeed = -1
+	if s.Xspeed > 2 {
+		s.Xspeed = 2
+	} else if s.Xspeed < -2 {
+		s.Xspeed = -2
 	} else if s.Yspeed > 1 {
 		s.Yspeed = 1
 	} else if s.Yspeed < -1 {
@@ -129,21 +129,21 @@ func (s *Snake) CheckSelfCollision() bool {
 }
 
 func (s *Snake) TurnLeft() {
-	if s.Xspeed == -1 {
-		s.Xspeed = -2
+	if s.Xspeed == -2 {
+		s.Xspeed = -4
 	}
 	if s.Xspeed == 0 {
-		s.Xspeed = -1
+		s.Xspeed = -2
 		s.Yspeed = 0
 	}
 }
 
 func (s *Snake) TurnRight() {
-	if s.Xspeed == 1 {
-		s.Xspeed = 2
+	if s.Xspeed == 2 {
+		s.Xspeed = 4
 	}
 	if s.Xspeed == 0 {
-		s.Xspeed = 1
+		s.Xspeed = 2
 		s.Yspeed = 0
 	}
 }
