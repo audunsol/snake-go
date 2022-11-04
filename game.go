@@ -117,9 +117,9 @@ func (g *Game) CenterText(startY int, text string) {
 func (g *Game) RenderCoordinates() {
 	// f := g.Fruits
 	sn := g.Snake
-	g.RenderText(g.Width+2, 5, fmt.Sprintf("========================"))
-	g.RenderText(g.Width+2, 6, fmt.Sprintf("DEBUG INFO:"))
-	g.RenderText(g.Width+2, 7, fmt.Sprintf("-----------"))
+	g.RenderText(g.Width+2, 5, "========================")
+	g.RenderText(g.Width+2, 6, "DEBUG INFO:")
+	g.RenderText(g.Width+2, 7, "-----------")
 	g.RenderText(g.Width+2, 8, fmt.Sprintf("Snake: (%v, %v)", sn.X, sn.Y))
 	g.RenderText(g.Width+2, 9, fmt.Sprintf("Snake len: %v", len(sn.Body)))
 	// for i, fruit := range f {
