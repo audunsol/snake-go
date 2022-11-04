@@ -3,6 +3,7 @@ package main
 const BodyRune = '\U0001F7E7'
 const NauseatedBodyRune = '\U0001F922'
 const ExplodingBodyRune = '\U0001F4A5'
+const StartLength = 4
 
 type BodyPart struct {
 	X int
@@ -27,7 +28,7 @@ func NewSnake() Snake {
 	s.Y = 10
 	s.Xspeed = 1
 	s.Yspeed = 0
-	s.Length = 4
+	s.Length = StartLength
 	s.Paused = false
 	s.Nauseated = false
 	s.Exploding = false

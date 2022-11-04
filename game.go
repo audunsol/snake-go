@@ -91,8 +91,12 @@ func (g *Game) RenderBorders() {
 	}
 }
 
+func (g *Game) CalculatePoints() int {
+	return (g.Snake.Length - StartLength) * 100
+}
+
 func (g *Game) RenderPanel() {
-	g.RenderText(g.Width+2, 2, fmt.Sprintf("Points: %v", g.Snake.Length*100))
+	g.RenderText(g.Width+2, 2, fmt.Sprintf("Points: %v", g.CalculatePoints()))
 }
 
 func (g *Game) RenderText(startX int, startY int, text string) {
@@ -140,7 +144,7 @@ func (g *Game) EatFruit() {
 
 func (g *Game) RenderGameOver() {
 	g.CenterText(7, "Game Over")
-	g.CenterText(11, fmt.Sprintf("%v points", g.Snake.Length))
+	g.CenterText(11, fmt.Sprintf("%v points", g.CalculatePoints()))
 	g.CenterText(15, "Hit ENTER to restart or ESC to quit")
 
 	g.Screen.Show()
