@@ -23,6 +23,7 @@ type Game struct {
 	Fruits                []Fruit
 	IsGameOver            bool
 	EatableFruitsPerLevel int
+	StartTime             time.Time
 }
 
 func NewGame(screen tcell.Screen) Game {
@@ -30,6 +31,7 @@ func NewGame(screen tcell.Screen) Game {
 		Screen:     screen,
 		Snake:      NewSnake(),
 		IsGameOver: false,
+		StartTime:  time.Now(),
 	}
 	game.ResizeScreen()
 	game.Fruits = game.GenerateFruit(initialNumberOfFruits)
@@ -100,8 +102,19 @@ func (g *Game) CalculatePoints() int {
 	return (g.Snake.Length - StartLength) * 100
 }
 
+func fmtDuration(d time.Duration) string {
+	sa := d.Round(time.Second)
+	m := sa / time.Minute
+	sa -= m * time.Minute
+	s := sa / time.Second
+	return fmt.Sprintf("%02d:%02d", m, s)
+}
+
 func (g *Game) RenderPanel() {
-	g.RenderText(g.Width+2, 2, fmt.Sprintf("Points: %v", g.CalculatePoints()))
+	x := g.Width + 2
+	g.RenderText(x, 2, fmt.Sprintf("Points: %v", g.CalculatePoints()))
+	duration := time.Since(g.StartTime)
+	g.RenderText(x, 3, fmt.Sprintf("Duration: %v", fmtDuration(duration)))
 }
 
 func (g *Game) RenderText(startX int, startY int, text string) {
