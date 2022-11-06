@@ -19,8 +19,9 @@ func main() {
 	game := NewGame(screen)
 
 	ch := make(chan Action)
+	input := make(chan rune)
 
-	go game.Run(ch)
+	go game.Run(ch, input)
 
 	for {
 		switch event := screen.PollEvent().(type) {
@@ -42,6 +43,8 @@ func main() {
 				ch <- Pause
 			} else if event.Key() == tcell.KeyEnter {
 				ch <- Yes
+			} else {
+				input <- event.Rune()
 			}
 		}
 	}

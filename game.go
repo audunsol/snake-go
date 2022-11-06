@@ -144,9 +144,10 @@ func (g *Game) RenderText(startX int, startY int, text string) {
 	}
 }
 
-func (g *Game) CenterText(startY int, text string) {
+func (g *Game) CenterText(startY int, text string) int {
 	startX := (g.Width / 2) - (len(text) / 2)
 	g.RenderText(startX, startY, text)
+	return startX + len(text)
 }
 
 func (g *Game) RenderCoordinates() {
@@ -186,26 +187,60 @@ func (g *Game) EatFruit() {
 	}
 }
 
-func (g *Game) RenderGameOver(ch chan Action) {
-	g.CenterText(7, "Game Over")
-	g.CenterText(11, fmt.Sprintf("%v points", g.CalculatePoints()))
-	g.CenterText(15, "Hit ENTER to restart or ESC to quit")
-
-	g.Screen.Show()
-
+func (g *Game) ReadInput(w int, h int, ch chan Action, inputCh chan rune) string {
+	input := []rune{}
+	s := g.Screen
 	for {
-		answer := <-ch
-		if answer == Yes {
-			newGame := NewGame(g.Screen)
-			g = &newGame
-			g.Run(ch)
-		} else if answer == Quit {
-			g.Exit()
+		select {
+		case answer := <-ch:
+			if answer == Yes {
+				return string(input)
+			} else if answer == Quit {
+				g.Exit()
+			}
+		case inputRune := <-inputCh:
+			input = append(input, inputRune)
+			s.SetContent(w+len(input), h, inputRune, nil, defStyle)
+			g.Screen.Show()
 		}
 	}
 }
 
-func (g *Game) Run(ch chan Action) {
+func (g *Game) RenderGameOver(ch chan Action, input chan rune) {
+	g.CenterText(7, "Game Over")
+	g.CenterText(11, fmt.Sprintf("%v points", g.CalculatePoints()))
+	points := g.CalculatePoints()
+	highscorelist := ReadHighScoresFromFile()
+	rank := highscorelist.IsNewHighScore(points)
+	if rank > 0 {
+		g.CenterText(15, fmt.Sprintf("New high score, rank %v!", rank))
+		startX := g.CenterText(17, "Enter your name:")
+		g.Screen.Show()
+		name := g.ReadInput(startX+1, 17, ch, input)
+		newList := highscorelist.Add(name, points)
+		newList.WriteToFile()
+	}
+	g.CenterText(20, "Hit ENTER to restart or ESC to quit")
+
+	g.Screen.Show()
+
+	for {
+		select {
+		case answer := <-ch:
+			if answer == Yes {
+				newGame := NewGame(g.Screen)
+				g = &newGame
+				g.Run(ch, input)
+			} else if answer == Quit {
+				g.Exit()
+			}
+		case <-input:
+			// Ignore other runes when awaiting if start new game or not...
+		}
+	}
+}
+
+func (g *Game) Run(ch chan Action, input chan rune) {
 	s := g.Screen
 	s.SetStyle(defStyle)
 
@@ -247,10 +282,12 @@ func (g *Game) Run(ch chan Action) {
 			case Quit:
 				g.Exit()
 			}
+		case <-input:
+			// Ignore typing while playing in main loop for now...
 		}
 	}
 
-	g.RenderGameOver(ch)
+	g.RenderGameOver(ch, input)
 }
 
 func (g *Game) Exit() {
