@@ -41,8 +41,8 @@ type Fruit struct {
 func NewFruit(minX, minY, maxX, maxY int) Fruit {
 	f := availableFruits[rand.Intn(len(availableFruits))]
 	return Fruit{
-		X:      rand.Intn(maxX),
-		Y:      rand.Intn(maxY),
+		X:      rand.Intn(maxX-minX) + minX,
+		Y:      rand.Intn(maxY-minY) + minY,
 		Type:   f.Rune,
 		Points: f.Points,
 		Lethal: f.Lethal,
