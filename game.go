@@ -24,14 +24,18 @@ type Game struct {
 	IsGameOver            bool
 	EatableFruitsPerLevel int
 	StartTime             time.Time
+	Lives                 int
+	PreviousPoints        int
 }
 
 func NewGame(screen tcell.Screen) Game {
 	game := Game{
-		Screen:     screen,
-		Snake:      NewSnake(),
-		IsGameOver: false,
-		StartTime:  time.Now(),
+		Screen:         screen,
+		Snake:          NewSnake(),
+		IsGameOver:     false,
+		StartTime:      time.Now(),
+		Lives:          3,
+		PreviousPoints: 0,
 	}
 	game.ResizeScreen()
 	game.Fruits = game.GenerateFruit(initialNumberOfFruits)
@@ -99,7 +103,18 @@ func (g *Game) RenderBorders() {
 }
 
 func (g *Game) CalculatePoints() int {
-	return (g.Snake.Length - StartLength) * 100
+	return g.PreviousPoints + (g.Snake.Length-StartLength)*100
+}
+
+func (g *Game) RemoveLife() {
+	g.Lives--
+	if g.Lives <= 0 {
+		g.IsGameOver = true
+	} else {
+		g.PreviousPoints = g.CalculatePoints()
+		g.Snake = NewSnake()
+		g.Fruits = g.GenerateFruit(initialNumberOfFruits)
+	}
 }
 
 func fmtDuration(d time.Duration) string {
@@ -112,9 +127,14 @@ func fmtDuration(d time.Duration) string {
 
 func (g *Game) RenderPanel() {
 	x := g.Width + 2
-	g.RenderText(x, 2, fmt.Sprintf("Points: %v", g.CalculatePoints()))
+	hearts := []rune{}
+	for i := 0; i < g.Lives; i++ {
+		hearts = append(hearts, '\U0001F9E1')
+	}
+	g.RenderText(x, 3, fmt.Sprintf("Lives: %v", string(hearts)))
+	g.RenderText(x, 4, fmt.Sprintf("Points: %v", g.CalculatePoints()))
 	duration := time.Since(g.StartTime)
-	g.RenderText(x, 3, fmt.Sprintf("Duration: %v", fmtDuration(duration)))
+	g.RenderText(x, 5, fmt.Sprintf("Duration: %v", fmtDuration(duration)))
 }
 
 func (g *Game) RenderText(startX int, startY int, text string) {
@@ -159,6 +179,9 @@ func (g *Game) EatFruit() {
 		if f.Lethal {
 			g.IsGameOver = true
 		}
+		if f.Type == heart {
+			g.Lives++
+		}
 		g.Fruits = append(g.Fruits[:i], g.Fruits[i+1:]...)
 	}
 }
@@ -193,7 +216,7 @@ func (g *Game) Run(ch chan Action) {
 		select {
 		case <-tick:
 			if !g.Snake.CheckEdges(g.Width, g.Height, borderSize) || !g.Snake.CheckSelfCollision() {
-				g.IsGameOver = true
+				g.RemoveLife()
 			}
 			g.EatFruit()
 			g.Snake.Update()
