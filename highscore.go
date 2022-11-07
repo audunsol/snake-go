@@ -55,6 +55,9 @@ func (list *HighScoreList) IsNewHighScore(points int) int {
 			return i + 1
 		}
 	}
+	if len(*list) < 10 {
+		return len(*list) + 1
+	}
 	return 0
 }
 
@@ -62,6 +65,9 @@ func (list *HighScoreList) Add(name string, points int) HighScoreList {
 	hs := NewHighScore(name, points)
 	newList := append(*list, hs)
 	newList.Sort()
+	if len(newList) > 10 {
+		newList = newList[:10]
+	}
 	return newList
 }
 
