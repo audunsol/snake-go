@@ -5,11 +5,6 @@ const NauseatedBodyRune = '\U0001F922'
 const ExplodingBodyRune = '\U0001F4A5'
 const StartLength = 4
 
-type BodyPart struct {
-	X int
-	Y int
-}
-
 type Snake struct {
 	X         int
 	Y         int
@@ -17,7 +12,7 @@ type Snake struct {
 	Yspeed    int
 	Paused    bool
 	Length    int
-	Body      []BodyPart
+	Body      []Point
 	Nauseated bool
 	Exploding bool
 }
@@ -33,7 +28,7 @@ func NewSnake() Snake {
 	s.Nauseated = false
 	s.Exploding = false
 	for i := 0; i < s.Length; i++ {
-		s.Body = append(s.Body, BodyPart{
+		s.Body = append(s.Body, Point{
 			X: s.X - i,
 			Y: s.Y,
 		})
@@ -67,11 +62,11 @@ func (s *Snake) Update() {
 		return
 	}
 	// Add new body part where head was now
-	b := BodyPart{
+	b := Point{
 		X: s.X,
 		Y: s.Y,
 	}
-	s.Body = append([]BodyPart{b}, s.Body...)
+	s.Body = append([]Point{b}, s.Body...)
 	if len(s.Body) >= s.Length {
 		// Remove last item(s) from body
 		// if snake has its full length (nothing eaten recently):
@@ -121,7 +116,7 @@ func (s *Snake) CheckEdges(w, h, borderSize int) bool {
 func (s *Snake) CheckSelfCollision() bool {
 	for i := len(s.Body) - 1; i > 4; i-- {
 		b := s.Body[i]
-		if s.X == b.X && s.Y == b.Y {
+		if b.DidHit(s) {
 			return false
 		}
 	}
