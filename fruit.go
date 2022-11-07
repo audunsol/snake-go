@@ -33,8 +33,7 @@ var availableFruits = []struct {
 }
 
 type Fruit struct {
-	X      int
-	Y      int
+	Point
 	Type   rune
 	Points int
 	Lethal bool
@@ -43,8 +42,10 @@ type Fruit struct {
 func NewFruit(minX, minY, maxX, maxY int) Fruit {
 	f := availableFruits[rand.Intn(len(availableFruits))]
 	return Fruit{
-		X:      rand.Intn(maxX-minX) + minX,
-		Y:      rand.Intn(maxY-minY) + minY,
+		Point: Point{
+			X: rand.Intn(maxX-minX) + minX,
+			Y: rand.Intn(maxY-minY) + minY,
+		},
 		Type:   f.Rune,
 		Points: f.Points,
 		Lethal: f.Lethal,
@@ -53,24 +54,6 @@ func NewFruit(minX, minY, maxX, maxY int) Fruit {
 
 func (f *Fruit) Display() rune {
 	return f.Type
-}
-
-func (f *Fruit) didFastForwardOver(s *Snake) bool {
-	if s.Y == f.Y {
-		return (s.Xspeed == 4 && ((s.X-2) == f.X || (s.X-3) == f.X)) || (s.Xspeed == -4 && ((s.X+2) == f.X || s.X+3 == f.X))
-	}
-	if s.X == f.X {
-		return (s.Yspeed == 2 && (s.Y-1) == f.Y) || (s.Yspeed == -2 && (s.Y+1) == f.Y)
-	}
-	return false
-}
-
-func (f *Fruit) DidHit(s *Snake) bool {
-	if (s.X == f.X || s.X+1 == f.X) && s.Y == f.Y {
-		return true
-	}
-
-	return f.didFastForwardOver(s)
 }
 
 func (f *Fruit) IsEatable() bool {
