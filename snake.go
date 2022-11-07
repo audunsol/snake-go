@@ -98,7 +98,7 @@ func (s *Snake) Update() {
 func (s *Snake) Eat(f Fruit) {
 	if f.Lethal {
 		s.Exploding = true
-	} else if f.Points <= 0 {
+	} else if f.Points < 0 {
 		s.Nauseated = true
 	} else if f.Points > 0 {
 		s.Nauseated = false
