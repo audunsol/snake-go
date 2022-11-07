@@ -26,6 +26,7 @@ type Game struct {
 	StartTime             time.Time
 	Lives                 int
 	PreviousPoints        int
+	HighScoreList         HighScoreList
 }
 
 func NewGame(screen tcell.Screen) Game {
@@ -39,6 +40,7 @@ func NewGame(screen tcell.Screen) Game {
 	}
 	game.ResizeScreen()
 	game.Fruits = game.GenerateFruit(initialNumberOfFruits)
+	game.HighScoreList = ReadHighScoresFromFile()
 	return game
 }
 
@@ -166,6 +168,16 @@ func (g *Game) RenderCoordinates() {
 	}
 }
 
+func (g *Game) RenderHighScore(startY int) {
+	g.RenderText(g.Width+2, startY, "========================")
+	g.RenderText(g.Width+2, startY+1, "HIGH SCORE:")
+	g.RenderText(g.Width+2, startY+2, "-----------")
+	for i, hs := range g.HighScoreList {
+		g.RenderText(g.Width+2, startY+4+i, fmt.Sprintf("%v: %v", i+1, hs.Name))
+		g.RenderText(g.Width+rightPanelWidth-5, startY+4+i, fmt.Sprintf("%v", hs.Points))
+	}
+}
+
 func (g *Game) EatFruit() {
 	var i = 0
 	var f Fruit
@@ -178,7 +190,7 @@ func (g *Game) EatFruit() {
 	if i < len(g.Fruits) {
 		g.Snake.Eat(f)
 		if f.Lethal {
-			g.IsGameOver = true
+			g.RemoveLife()
 		}
 		if f.Type == heart {
 			g.Lives++
@@ -219,6 +231,8 @@ func (g *Game) RenderGameOver(ch chan Action, input chan rune) {
 		name := g.ReadInput(startX+1, 17, ch, input)
 		newList := highscorelist.Add(name, points)
 		newList.WriteToFile()
+		g.RenderHighScore(7)
+		g.Screen.Show()
 	}
 	g.CenterText(20, "Hit ENTER to restart or ESC to quit")
 
@@ -261,6 +275,7 @@ func (g *Game) Run(ch chan Action, input chan rune) {
 			g.RenderBorders()
 			g.RenderPanel()
 			// g.RenderCoordinates()
+			g.RenderHighScore(7)
 			g.RenderSnake()
 			g.RenderFruits()
 			s.SetContent(g.Snake.X, g.Snake.Y, g.Snake.Display(), nil, defStyle)
