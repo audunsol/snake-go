@@ -6,8 +6,7 @@ const ExplodingBodyRune = '\U0001F4A5'
 const StartLength = 4
 
 type Snake struct {
-	X         int
-	Y         int
+	Point
 	Xspeed    int
 	Yspeed    int
 	Paused    bool
