@@ -1,8 +1,17 @@
 package main
 
+import "math/rand"
+
 type Point struct {
 	X int
 	Y int
+}
+
+func NewPoint(minX, minY, maxX, maxY int) Point {
+	return Point{
+		X: rand.Intn(maxX-minX) + minX,
+		Y: rand.Intn(maxY-minY) + minY,
+	}
 }
 
 func (p *Point) didFastForwardOver(s *Snake) bool {
