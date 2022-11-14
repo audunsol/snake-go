@@ -45,6 +45,15 @@ func NewGame(screen tcell.Screen) Game {
 	return game
 }
 
+func (g *Game) ClearAndRerenderFrame() {
+	s := g.Screen
+	s.Clear()
+	g.RenderBorders()
+	g.RenderHighScore(7)
+	s.Show()
+	s.Sync()
+}
+
 func (g *Game) ResizeScreen() {
 	width, height := g.Screen.Size()
 	g.Width = width - rightPanelWidth - borderSize*2
@@ -280,10 +289,8 @@ func (g *Game) RenderGameOver(ch chan Action, input chan rune) {
 
 func (g *Game) Run(ch chan Action, input chan rune) {
 	s := g.Screen
-	s.Clear()
 	s.SetStyle(defStyle)
-	g.RenderBorders()
-	g.RenderHighScore(7)
+	g.ClearAndRerenderFrame()
 
 	tick := time.Tick(80 * time.Millisecond)
 
@@ -293,9 +300,7 @@ func (g *Game) Run(ch chan Action, input chan rune) {
 		case <-tick:
 			if !g.Snake.CheckEdges(g.Width, g.Height, borderSize) || !g.Snake.CheckSelfCollision() {
 				g.RemoveLife()
-				s.Clear()
-				g.RenderBorders()
-				g.RenderHighScore(7)
+				g.ClearAndRerenderFrame()
 			}
 			g.EatFruit()
 			g.ClearSnake()
@@ -321,9 +326,7 @@ func (g *Game) Run(ch chan Action, input chan rune) {
 				g.Snake.Pause()
 			case Resize:
 				g.ResizeScreen()
-				s.Clear()
-				g.RenderBorders()
-				g.RenderHighScore(7)
+				g.ClearAndRerenderFrame()
 			case Quit:
 				g.Exit()
 			}
