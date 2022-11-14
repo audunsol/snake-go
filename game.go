@@ -138,14 +138,18 @@ func fmtDuration(d time.Duration) string {
 
 func (g *Game) RenderPanel() {
 	x := g.Width + 2
-	hearts := []rune{}
+	hearts := make([]rune, 5)
 	if g.Lives < 6 {
-		for i := 0; i < g.Lives; i++ {
-			hearts = append(hearts, '\U0001F9E1')
+		for i := 0; i < 5; i++ {
+			if i < g.Lives {
+				hearts[i] = '\U0001F9E1'
+			} else {
+				hearts[i] = ' '
+			}
 		}
 		g.RenderText(x, 3, fmt.Sprintf("Lives: %v", string(hearts)))
 	} else {
-		g.RenderText(x, 3, fmt.Sprintf("Lives: %v x %s", g.Lives, string('\U0001F9E1')))
+		g.RenderText(x, 3, fmt.Sprintf("Lives: %v x %s     ", g.Lives, string('\U0001F9E1')))
 	}
 	g.RenderText(x, 4, fmt.Sprintf("Points: %v", g.CalculatePoints()))
 	duration := time.Since(g.StartTime)
