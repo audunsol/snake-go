@@ -58,19 +58,27 @@ func (g *Game) GenerateFruit(n int) []Fruit {
 	return fruits
 }
 
-func (g *Game) RenderSnake() {
+func (g *Game) renderSnakeWithRune(r rune) {
 	s := g.Screen
-	s.SetContent(g.Snake.X, g.Snake.Y, g.Snake.Display(), nil, defStyle)
+	s.SetContent(g.Snake.X, g.Snake.Y, r, nil, defStyle)
 	snake := g.Snake
 	for i := 0; i < snake.Length; i++ {
 		if i < len(snake.Body) {
 			part := snake.Body[i]
-			s.SetContent(part.X, part.Y, g.Snake.Display(), nil, defStyle)
+			s.SetContent(part.X, part.Y, r, nil, defStyle)
 			if i < (len(snake.Body)-1) && snake.Body[i+1].Y == part.Y {
-				s.SetContent(part.X+1, part.Y, g.Snake.Display(), nil, defStyle)
+				s.SetContent(part.X+1, part.Y, r, nil, defStyle)
 			}
 		}
 	}
+}
+
+func (g *Game) RenderSnake() {
+	g.renderSnakeWithRune(g.Snake.Display())
+}
+
+func (g *Game) ClearSnake() {
+	g.renderSnakeWithRune(' ')
 }
 
 func (g *Game) RenderFruits() {
@@ -114,6 +122,7 @@ func (g *Game) RemoveLife() {
 		g.IsGameOver = true
 	} else {
 		g.PreviousPoints = g.CalculatePoints()
+		g.ClearSnake()
 		g.Snake = NewSnake()
 		g.Fruits = g.GenerateFruit(initialNumberOfFruits)
 	}
@@ -261,6 +270,7 @@ func (g *Game) RenderGameOver(ch chan Action, input chan rune) {
 func (g *Game) Run(ch chan Action, input chan rune) {
 	s := g.Screen
 	s.SetStyle(defStyle)
+	s.Clear()
 
 	tick := time.Tick(80 * time.Millisecond)
 
@@ -272,17 +282,16 @@ func (g *Game) Run(ch chan Action, input chan rune) {
 				g.RemoveLife()
 			}
 			g.EatFruit()
+			g.ClearSnake()
 			g.Snake.Update()
 
 			// Render:
-			s.Clear()
 			g.RenderBorders()
 			g.RenderPanel()
 			// g.RenderCoordinates()
 			g.RenderHighScore(7)
 			g.RenderSnake()
 			g.RenderFruits()
-			s.SetContent(g.Snake.X, g.Snake.Y, g.Snake.Display(), nil, defStyle)
 			s.Show()
 		case action := <-ch:
 			switch action {
