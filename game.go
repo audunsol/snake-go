@@ -91,22 +91,27 @@ func (g *Game) ClearSnake() {
 	g.renderSnakeWithRune(' ')
 }
 
-func (g *Game) RenderFruits() {
-	s := g.Screen
-	f := g.Fruits
-	for i := 0; i < len(f); i++ {
-		fruit := f[i]
-		s.SetContent(fruit.X, fruit.Y, fruit.Display(), nil, defStyle)
-	}
-
+func eatableFruitLeft(f []Fruit) int {
 	eatableFruitLeft := 0
 	for _, fruit := range f {
 		if fruit.IsEatable() {
 			eatableFruitLeft++
 		}
 	}
-	if eatableFruitLeft == 0 {
+	return eatableFruitLeft
+}
+
+func (g *Game) RenderFruits() {
+	f := g.Fruits
+	s := g.Screen
+	if eatableFruitLeft(f) == 0 {
+		// Clear before regenerate:
+		g.ClearAndRerenderFrame()
 		g.Fruits = g.GenerateFruit(3)
+	}
+	for i := 0; i < len(f); i++ {
+		fruit := f[i]
+		s.SetContent(fruit.X, fruit.Y, fruit.Display(), nil, defStyle)
 	}
 }
 
