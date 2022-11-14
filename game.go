@@ -27,6 +27,7 @@ type Game struct {
 	Lives                 int
 	PreviousPoints        int
 	HighScoreList         HighScoreList
+	FinishPoint           FinishPoint
 }
 
 func NewGame(screen tcell.Screen) Game {
@@ -112,6 +113,12 @@ func (g *Game) RenderBorders() {
 	}
 }
 
+func (g *Game) RenderFinishPoint() {
+	s := g.Screen
+	if g.FinishPoint.Show {
+		s.SetContent(g.FinishPoint.X, g.FinishPoint.Y, g.FinishPoint.Display(), nil, defStyle)
+	}
+}
 func (g *Game) CalculatePoints() int {
 	return g.PreviousPoints + (g.Snake.Length-StartLength)*100
 }
