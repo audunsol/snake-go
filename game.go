@@ -321,6 +321,9 @@ func (g *Game) Run(ch chan Action, input chan rune) {
 				g.Snake.Pause()
 			case Resize:
 				g.ResizeScreen()
+				s.Clear()
+				g.RenderBorders()
+				g.RenderHighScore(7)
 			case Quit:
 				g.Exit()
 			}
