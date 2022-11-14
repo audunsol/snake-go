@@ -269,8 +269,10 @@ func (g *Game) RenderGameOver(ch chan Action, input chan rune) {
 
 func (g *Game) Run(ch chan Action, input chan rune) {
 	s := g.Screen
-	s.SetStyle(defStyle)
 	s.Clear()
+	s.SetStyle(defStyle)
+	g.RenderBorders()
+	g.RenderHighScore(7)
 
 	tick := time.Tick(80 * time.Millisecond)
 
@@ -280,16 +282,17 @@ func (g *Game) Run(ch chan Action, input chan rune) {
 		case <-tick:
 			if !g.Snake.CheckEdges(g.Width, g.Height, borderSize) || !g.Snake.CheckSelfCollision() {
 				g.RemoveLife()
+				s.Clear()
+				g.RenderBorders()
+				g.RenderHighScore(7)
 			}
 			g.EatFruit()
 			g.ClearSnake()
 			g.Snake.Update()
 
 			// Render:
-			g.RenderBorders()
 			g.RenderPanel()
 			// g.RenderCoordinates()
-			g.RenderHighScore(7)
 			g.RenderSnake()
 			g.RenderFruits()
 			s.Show()
