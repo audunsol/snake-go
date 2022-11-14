@@ -302,8 +302,8 @@ func (g *Game) Run(ch chan Action, input chan rune) {
 				g.RemoveLife()
 				g.ClearAndRerenderFrame()
 			}
-			g.EatFruit()
 			g.ClearSnake()
+			g.EatFruit()
 			g.Snake.Update()
 
 			// Render:
