@@ -2,14 +2,29 @@ package main
 
 type FinishPoint struct {
 	Point
-	Show bool
+	show                   bool
+	EatableFruitsThreshold int
 }
 
-func NewFinishPoint(minX, minY, maxX, maxY int) FinishPoint {
+func NewFinishPoint(minX, minY, maxX, maxY, treshold int) FinishPoint {
 	return FinishPoint{
-		Point: NewPoint(minX, minY, maxX, maxY),
-		Show:  false,
+		Point:                  NewPoint(minX, minY, maxX, maxY),
+		show:                   false,
+		EatableFruitsThreshold: treshold,
 	}
+}
+
+func (f *FinishPoint) Show() bool {
+	return f.show
+}
+
+func (f *FinishPoint) EvaluateShow(eatableFruitsGenerated int) bool {
+	if eatableFruitsGenerated > f.EatableFruitsThreshold {
+		f.show = true
+	} else {
+		f.show = false
+	}
+	return f.show
 }
 
 func (f *FinishPoint) Display() rune {

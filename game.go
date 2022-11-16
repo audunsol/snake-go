@@ -41,7 +41,9 @@ func NewGame(screen tcell.Screen) Game {
 	}
 	game.ResizeScreen()
 	game.Fruits = game.GenerateFruit(initialNumberOfFruits)
+	game.EatableFruitsPerLevel = eatableFruitLeft(game.Fruits)
 	game.HighScoreList = ReadHighScoresFromFile()
+	game.FinishPoint = NewFinishPoint(borderSize, borderSize, game.Width-borderSize, game.Height-borderSize, 30)
 	return game
 }
 
@@ -91,6 +93,23 @@ func (g *Game) ClearSnake() {
 	g.renderSnakeWithRune(' ')
 }
 
+func (g *Game) renderOrClearFruits(clear bool) {
+	f := g.Fruits
+	s := g.Screen
+	for i := 0; i < len(f); i++ {
+		fruit := f[i]
+		r := fruit.Display()
+		if clear {
+			r = ' '
+		}
+		s.SetContent(fruit.X, fruit.Y, r, nil, defStyle)
+	}
+}
+
+func (g *Game) ClearFruits() {
+	g.renderOrClearFruits(true)
+}
+
 func eatableFruitLeft(f []Fruit) int {
 	eatableFruitLeft := 0
 	for _, fruit := range f {
@@ -103,16 +122,14 @@ func eatableFruitLeft(f []Fruit) int {
 
 func (g *Game) RenderFruits() {
 	f := g.Fruits
-	s := g.Screen
 	if eatableFruitLeft(f) == 0 {
 		// Clear before regenerate:
 		g.ClearAndRerenderFrame()
 		g.Fruits = g.GenerateFruit(3)
+		g.EatableFruitsPerLevel += eatableFruitLeft(g.Fruits)
 	}
-	for i := 0; i < len(f); i++ {
-		fruit := f[i]
-		s.SetContent(fruit.X, fruit.Y, fruit.Display(), nil, defStyle)
-	}
+	g.renderOrClearFruits(false)
+	g.FinishPoint.EvaluateShow(g.EatableFruitsPerLevel)
 }
 
 func (g *Game) RenderBorders() {
@@ -129,7 +146,7 @@ func (g *Game) RenderBorders() {
 
 func (g *Game) RenderFinishPoint() {
 	s := g.Screen
-	if g.FinishPoint.Show {
+	if g.FinishPoint.Show() {
 		s.SetContent(g.FinishPoint.X, g.FinishPoint.Y, g.FinishPoint.Display(), nil, defStyle)
 	}
 }
@@ -308,6 +325,7 @@ func (g *Game) Run(ch chan Action, input chan rune) {
 				g.ClearAndRerenderFrame()
 			}
 			g.ClearSnake()
+			g.ClearFruits()
 			g.EatFruit()
 			g.Snake.Update()
 
@@ -316,6 +334,7 @@ func (g *Game) Run(ch chan Action, input chan rune) {
 			// g.RenderCoordinates()
 			g.RenderSnake()
 			g.RenderFruits()
+			g.RenderFinishPoint()
 			s.Show()
 		case action := <-ch:
 			switch action {
