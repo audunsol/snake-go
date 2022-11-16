@@ -11,4 +11,5 @@ const (
 	Quit
 	Resize
 	Yes
+	Delete
 )

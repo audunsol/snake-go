@@ -43,6 +43,8 @@ func main() {
 				ch <- Pause
 			} else if event.Key() == tcell.KeyEnter {
 				ch <- Yes
+			} else if event.Key() == tcell.KeyDelete || event.Key() == tcell.KeyBackspace || event.Key() == tcell.KeyBackspace2 {
+				ch <- Delete
 			} else {
 				input <- event.Rune()
 			}

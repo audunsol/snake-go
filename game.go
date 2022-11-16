@@ -282,6 +282,10 @@ func (g *Game) ReadInput(w int, h int, ch chan Action, inputCh chan rune) string
 				return string(input)
 			} else if answer == Quit {
 				g.Exit()
+			} else if answer == Delete && len(input) > 0 {
+				input = input[:len(input)-1]
+				s.SetContent(w+len(input)+1, h, ' ', nil, defStyle)
+				g.Screen.Show()
 			}
 		case inputRune := <-inputCh:
 			input = append(input, inputRune)
