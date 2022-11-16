@@ -60,6 +60,7 @@ func (g *Game) ClearAndRerenderFrame() {
 
 func (g *Game) NextLevel() {
 	g.ClearAndRerenderFrame()
+	g.EatableFruitsPerLevel = 0
 	g.Level++
 	g.CenterText(10, fmt.Sprintf("Next level: %v", g.Level))
 	g.Screen.Show()
@@ -69,6 +70,7 @@ func (g *Game) NextLevel() {
 	g.PreviousPoints += 1000
 	g.Snake = NewSnake()
 	g.Fruits = g.GenerateFruit(initialNumberOfFruits)
+	g.FinishPoint = NewFinishPoint(borderSize, borderSize, g.Width-borderSize, g.Height-borderSize, 30)
 }
 
 func (g *Game) ResizeScreen() {
