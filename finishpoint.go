@@ -18,6 +18,13 @@ func (f *FinishPoint) Show() bool {
 	return f.show
 }
 
+func (f *FinishPoint) DidHit(s *Snake) bool {
+	if f.show {
+		return f.Point.DidHit(s)
+	}
+	return false
+}
+
 func (f *FinishPoint) EvaluateShow(eatableFruitsGenerated int) bool {
 	if eatableFruitsGenerated > f.EatableFruitsThreshold {
 		f.show = true
