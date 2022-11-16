@@ -28,6 +28,7 @@ type Game struct {
 	PreviousPoints        int
 	HighScoreList         HighScoreList
 	FinishPoint           FinishPoint
+	Level                 int
 }
 
 func NewGame(screen tcell.Screen) Game {
@@ -38,6 +39,7 @@ func NewGame(screen tcell.Screen) Game {
 		StartTime:      time.Now(),
 		Lives:          3,
 		PreviousPoints: 0,
+		Level:          1,
 	}
 	game.ResizeScreen()
 	game.Fruits = game.GenerateFruit(initialNumberOfFruits)
@@ -54,6 +56,19 @@ func (g *Game) ClearAndRerenderFrame() {
 	g.RenderHighScore(7)
 	s.Show()
 	s.Sync()
+}
+
+func (g *Game) NextLevel() {
+	g.ClearAndRerenderFrame()
+	g.Level++
+	g.CenterText(10, fmt.Sprintf("Next level: %v", g.Level))
+	g.Screen.Show()
+	time.Sleep(2 * time.Second)
+	g.PreviousPoints = g.CalculatePoints()
+	// Add points just for completing the level:
+	g.PreviousPoints += 1000
+	g.Snake = NewSnake()
+	g.Fruits = g.GenerateFruit(initialNumberOfFruits)
 }
 
 func (g *Game) ResizeScreen() {
@@ -190,8 +205,9 @@ func (g *Game) RenderPanel() {
 		g.RenderText(x, 3, fmt.Sprintf("Lives: %v x %s     ", g.Lives, string('\U0001F9E1')))
 	}
 	g.RenderText(x, 4, fmt.Sprintf("Points: %v", g.CalculatePoints()))
+	g.RenderText(x, 5, fmt.Sprintf("Level: %v", g.Level))
 	duration := time.Since(g.StartTime)
-	g.RenderText(x, 5, fmt.Sprintf("Duration: %v", fmtDuration(duration)))
+	g.RenderText(x, 6, fmt.Sprintf("Duration: %v", fmtDuration(duration)))
 }
 
 func (g *Game) RenderText(startX int, startY int, text string) {
@@ -327,6 +343,9 @@ func (g *Game) Run(ch chan Action, input chan rune) {
 			g.ClearSnake()
 			g.ClearFruits()
 			g.EatFruit()
+			if g.FinishPoint.DidHit(&g.Snake) {
+				g.NextLevel()
+			}
 			g.Snake.Update()
 
 			// Render:
