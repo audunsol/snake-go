@@ -14,6 +14,7 @@ var rightPanelWidth = 50
 var borderSize = 1
 
 const initialNumberOfFruits = 10
+const finishPointThreshold = 30
 
 type Game struct {
 	Screen                tcell.Screen
@@ -45,7 +46,7 @@ func NewGame(screen tcell.Screen) Game {
 	game.Fruits = game.GenerateFruit(initialNumberOfFruits)
 	game.EatableFruitsPerLevel = eatableFruitLeft(game.Fruits)
 	game.HighScoreList = ReadHighScoresFromFile()
-	game.FinishPoint = NewFinishPoint(borderSize, borderSize, game.Width-borderSize, game.Height-borderSize, 30)
+	game.FinishPoint = NewFinishPoint(borderSize, borderSize, game.Width-borderSize, game.Height-borderSize, finishPointThreshold)
 	return game
 }
 
@@ -58,19 +59,30 @@ func (g *Game) ClearAndRerenderFrame() {
 	s.Sync()
 }
 
+func (g *Game) RenderSplashText(startLine int, t string) int {
+	splash, maxSplashLen := GetTextAndLength(t)
+	startX := (g.Width / 2) - (maxSplashLen / 2)
+	for i, line := range splash {
+		g.RenderText(startX, startLine+i, line)
+	}
+	g.Screen.Show()
+	return len(splash)
+}
+
 func (g *Game) NextLevel() {
 	g.ClearAndRerenderFrame()
 	g.EatableFruitsPerLevel = 0
 	g.Level++
-	g.CenterText(10, fmt.Sprintf("Next level: %v", g.Level))
+	g.RenderSplashText(10, fmt.Sprintf("Next level: %v", g.Level))
 	g.Screen.Show()
 	time.Sleep(2 * time.Second)
+	g.ClearAndRerenderFrame()
 	g.PreviousPoints = g.CalculatePoints()
 	// Add points just for completing the level:
 	g.PreviousPoints += 1000
 	g.Snake = NewSnake()
 	g.Fruits = g.GenerateFruit(initialNumberOfFruits)
-	g.FinishPoint = NewFinishPoint(borderSize, borderSize, g.Width-borderSize, g.Height-borderSize, 30)
+	g.FinishPoint = NewFinishPoint(borderSize, borderSize, g.Width-borderSize, g.Height-borderSize, finishPointThreshold)
 }
 
 func (g *Game) ResizeScreen() {
@@ -296,22 +308,27 @@ func (g *Game) ReadInput(w int, h int, ch chan Action, inputCh chan rune) string
 }
 
 func (g *Game) RenderGameOver(ch chan Action, input chan rune) {
-	g.CenterText(7, "Game Over")
-	g.CenterText(11, fmt.Sprintf("%v points", g.CalculatePoints()))
+	lineCounter := 7
+	lineCounter += g.RenderSplashText(lineCounter, "GAME OVER")
+	lineCounter += 2
+	g.CenterText(lineCounter, fmt.Sprintf("%v points", g.CalculatePoints()))
 	points := g.CalculatePoints()
 	highscorelist := ReadHighScoresFromFile()
 	rank := highscorelist.IsNewHighScore(points)
+	lineCounter++
 	if rank > 0 {
-		g.CenterText(15, fmt.Sprintf("New high score, rank %v!", rank))
-		startX := g.CenterText(17, "Enter your name:")
+		g.CenterText(lineCounter, fmt.Sprintf("New high score, rank %v!", rank))
+		lineCounter += 2
+		startX := g.CenterText(lineCounter, "Enter your name:")
 		g.Screen.Show()
-		name := g.ReadInput(startX+1, 17, ch, input)
+		name := g.ReadInput(startX+1, lineCounter, ch, input)
 		newList := highscorelist.Add(name, points)
 		newList.WriteToFile()
 		g.RenderHighScore(7)
 		g.Screen.Show()
 	}
-	g.CenterText(20, "Hit ENTER to restart or ESC to quit")
+	lineCounter += 3
+	g.CenterText(lineCounter, "Hit ENTER to restart or ESC to quit")
 
 	g.Screen.Show()
 
@@ -336,6 +353,10 @@ func (g *Game) Run(ch chan Action, input chan rune) {
 	s.SetStyle(defStyle)
 	g.ClearAndRerenderFrame()
 
+	splashHeight := g.RenderSplashText(10, "SNAKE-GO")
+	g.CenterText(10+splashHeight+2, "Get ready...")
+	s.Show()
+	time.Sleep(2 * time.Second)
 	tick := time.Tick(80 * time.Millisecond)
 
 	// Main loop is here:
