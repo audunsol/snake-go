@@ -6,7 +6,7 @@ This is a very simple project, just made for:
 - have fun
 - show some programming stuff to my kids
 
-Don't take it too seriously
+Don't take it too seriously.
 
 ## How to run
 
@@ -49,4 +49,4 @@ go run .
 - [ ] Implement wormhole
 - [x] Add bombs (fruits that one has to avoid)
 - [x] Add new level when eaten a defined number of fruits
-- [ ] Walls with increasing challenges as leveling up
+- [x] Walls with increasing challenges as leveling up

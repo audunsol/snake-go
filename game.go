@@ -23,6 +23,7 @@ type Game struct {
 	Height                int
 	Snake                 Snake
 	Fruits                []Fruit
+	Wall                  Wall
 	IsGameOver            bool
 	EatableFruitsPerLevel int
 	StartTime             time.Time
@@ -49,6 +50,7 @@ func NewGame(screen tcell.Screen) Game {
 	game.EatableFruitsPerLevel = eatableFruitLeft(game.Fruits)
 	game.HighScoreList = ReadHighScoresFromFile()
 	game.FinishPoint = NewFinishPoint(borderSize, borderSize, game.Width-borderSize, game.Height-borderSize, finishPointThreshold)
+	game.Wall = game.GenerateWall()
 	return game
 }
 
@@ -57,8 +59,13 @@ func (g *Game) ClearAndRerenderFrame() {
 	s.Clear()
 	g.RenderBorders()
 	g.RenderHighScore(7)
+	g.RenderWall()
 	s.Show()
 	s.Sync()
+}
+
+func (g *Game) GenerateWall() Wall {
+	return WallPerLevel(borderSize, borderSize, g.Width-borderSize, g.Height-borderSize, g.Level)
 }
 
 func (g *Game) RenderSplashText(startLine int, t string) int {
@@ -85,6 +92,7 @@ func (g *Game) NextLevel() {
 	g.Snake = NewSnake()
 	g.Fruits = g.GenerateFruit(initialNumberOfFruits)
 	g.FinishPoint = NewFinishPoint(borderSize, borderSize, g.Width-borderSize, g.Height-borderSize, finishPointThreshold)
+	g.Wall = g.GenerateWall()
 }
 
 func (g *Game) ResizeScreen() {
@@ -210,12 +218,25 @@ func (g *Game) RenderBorders() {
 	}
 }
 
+func (g *Game) RenderWall() {
+	s := g.Screen
+	w := g.Wall
+	for _, p := range w.Points {
+		s.SetContent(p.X, p.Y, w.Display(), nil, defStyle)
+	}
+}
+
 func (g *Game) RenderFinishPoint() {
 	s := g.Screen
 	if g.FinishPoint.Show() {
 		s.SetContent(g.FinishPoint.X, g.FinishPoint.Y, g.FinishPoint.Display(), nil, defStyle)
 	}
 }
+
+// func (g *Game) RenderWormholes() {
+// 	hole := '\U0001F573'
+// }
+
 func (g *Game) CalculatePoints() int {
 	return g.PreviousPoints + (g.Snake.Length-StartLength)*100
 }
@@ -412,7 +433,7 @@ func (g *Game) Run(ch chan Action, input chan rune) {
 	for !g.IsGameOver {
 		select {
 		case <-tick:
-			if !g.Snake.CheckEdges(g.Width, g.Height, borderSize) || !g.Snake.CheckSelfCollision() {
+			if !g.Snake.CheckEdges(g.Width, g.Height, borderSize) || !g.Snake.CheckSelfCollision() || g.Wall.DidHit(&g.Snake) {
 				g.RemoveLife()
 				g.ClearAndRerenderFrame()
 			}
@@ -429,6 +450,7 @@ func (g *Game) Run(ch chan Action, input chan rune) {
 
 			// Render:
 			g.RenderPanel()
+			g.RenderWall()
 			// g.RenderCoordinates()
 			g.RenderSnake()
 			g.RenderFruits()
