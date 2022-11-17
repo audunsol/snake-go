@@ -3,6 +3,7 @@ package main
 import "sort"
 
 const WallRune = '#'
+const Brick = '\U0001F9F1'
 
 type Wall struct {
 	Points []Point
@@ -34,7 +35,7 @@ func WallPerLevel(minX, minY, maxX, maxY, level int) Wall {
 }
 
 func (w *Wall) Display() rune {
-	return WallRune
+	return Brick
 }
 
 func emptyWall() Wall {
