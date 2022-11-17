@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"time"
 
@@ -26,6 +27,7 @@ type Game struct {
 	EatableFruitsPerLevel int
 	StartTime             time.Time
 	Lives                 int
+	Hearts                []Heart
 	PreviousPoints        int
 	HighScoreList         HighScoreList
 	FinishPoint           FinishPoint
@@ -73,7 +75,7 @@ func (g *Game) NextLevel() {
 	g.ClearAndRerenderFrame()
 	g.EatableFruitsPerLevel = 0
 	g.Level++
-	g.RenderSplashText(10, fmt.Sprintf("Next level: %v", g.Level))
+	g.RenderSplashText(10, fmt.Sprintf("LEVEL: %v", g.Level))
 	g.Screen.Show()
 	time.Sleep(2 * time.Second)
 	g.ClearAndRerenderFrame()
@@ -97,6 +99,14 @@ func (g *Game) GenerateFruit(n int) []Fruit {
 		fruits = append(fruits, NewFruit(borderSize, borderSize, g.Width-borderSize, g.Height-borderSize))
 	}
 	return fruits
+}
+
+func (g *Game) GenerateHeart() {
+	// Random, around every 500 tick, generate a new heart
+	// that is visible for 10 seconds:
+	if rand.Intn(500) == 0 {
+		g.Hearts = append(g.Hearts, NewHeart(borderSize, borderSize, g.Width-borderSize, g.Height-borderSize, 10))
+	}
 }
 
 func (g *Game) renderSnakeWithRune(r rune) {
@@ -159,6 +169,33 @@ func (g *Game) RenderFruits() {
 	}
 	g.renderOrClearFruits(false)
 	g.FinishPoint.EvaluateShow(g.EatableFruitsPerLevel)
+}
+
+func (g *Game) renderOrClearHearts(clear bool) {
+	h := g.Hearts
+	s := g.Screen
+	for i := 0; i < len(h); i++ {
+		heart := h[i]
+		runes := []rune{' ', ' ', ' '}
+		if !clear && heart.Show() {
+			runes = heart.Display()
+		}
+		for i, r := range runes {
+			yOffset := 0
+			if i > 0 {
+				yOffset = -1
+			}
+			s.SetContent(heart.X+i, heart.Y+yOffset, r, nil, defStyle)
+		}
+	}
+}
+
+func (g *Game) ClearHearts() {
+	g.renderOrClearHearts(true)
+}
+
+func (g *Game) RenderHearts() {
+	g.renderOrClearHearts(false)
 }
 
 func (g *Game) RenderBorders() {
@@ -277,10 +314,22 @@ func (g *Game) EatFruit() {
 		if f.Lethal {
 			g.RemoveLife()
 		}
-		if f.Type == heart {
-			g.Lives++
-		}
 		g.Fruits = append(g.Fruits[:i], g.Fruits[i+1:]...)
+	}
+}
+
+func (g *Game) CheckHearts() {
+	var i int
+	for i = 0; i < len(g.Hearts); i++ {
+		h := g.Hearts[i]
+		if h.DidHit(&g.Snake) {
+			g.Lives++
+			break
+		}
+	}
+	// Remove heart from list:
+	if i < len(g.Hearts) {
+		g.Hearts = append(g.Hearts[:i], g.Hearts[i+1:]...)
 	}
 }
 
@@ -367,9 +416,12 @@ func (g *Game) Run(ch chan Action, input chan rune) {
 				g.RemoveLife()
 				g.ClearAndRerenderFrame()
 			}
+			g.GenerateHeart()
 			g.ClearSnake()
 			g.ClearFruits()
+			g.ClearHearts()
 			g.EatFruit()
+			g.CheckHearts()
 			if g.FinishPoint.DidHit(&g.Snake) {
 				g.NextLevel()
 			}
@@ -380,6 +432,7 @@ func (g *Game) Run(ch chan Action, input chan rune) {
 			// g.RenderCoordinates()
 			g.RenderSnake()
 			g.RenderFruits()
+			g.RenderHearts()
 			g.RenderFinishPoint()
 			s.Show()
 		case action := <-ch:

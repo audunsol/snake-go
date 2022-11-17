@@ -13,7 +13,6 @@ var eggplant = '\U0001F346'
 var poo = '\U0001F4A9'
 var firecracker = '\U0001F9E8'
 var bomb = '\U0001F4A3'
-var heart = '\U0001F9E1'
 
 var availableFruits = []struct {
 	Rune   rune
@@ -29,7 +28,6 @@ var availableFruits = []struct {
 	{poo, -10, false},
 	{firecracker, 0, true},
 	{bomb, 0, true},
-	{heart, 0, false},
 }
 
 type Fruit struct {
