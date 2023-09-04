@@ -1,12 +1,12 @@
 # Snake Go
 
-This is a very simple project, just made for:
+This is a very simple project, just made for me to:
 
 - learn golang
 - have fun
 - show some programming stuff to my kids
 
-Don't take it too seriously.
+Please don't take it too seriously.
 
 ## How to run
 
