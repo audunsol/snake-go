@@ -33,7 +33,7 @@ go run .
 - ~~Add sqlite DB to hold high-scores and user profiles~~
 - [x] Store highscores in local JSON file
 - [x] Accept name input when getting a new high score
-- [ ] Add multiple lives before game over
+- [x] Add multiple lives before game over
 - [x] Add heart emojis that increase number of lives
 - [x] Make hearts less probable than other fruits, and for a limited time
 - [ ] Add settings
